@@ -22,7 +22,7 @@ openclaw config set gateway.mode local 2>&1 || true
 
 echo "Iniciando Gateway na porta ${OPENCLAW_PORT:-18789}..."
 
-# Inicia o gateway em background, pega a URL e depois traz pra foreground
+# Inicia o gateway em background
 openclaw gateway run \
   --port "${OPENCLAW_PORT:-18789}" \
   --bind lan \
@@ -41,6 +41,20 @@ echo "============================================"
 openclaw dashboard --no-open 2>&1 || echo "Use: https://seu-dominio/?token=$OPENCLAW_GATEWAY_TOKEN"
 echo "============================================"
 echo ""
+
+# Script de auto-pairing para o primeiro acesso
+# Ele roda em background aposta verificando a cada 5 segundos por 5 minutos
+(
+  echo ">>> Aguardando conexão da UI para auto-aprovação (pairing)..."
+  for i in {1..60}; do
+    # Tenta aprovar a requisição mais recente usando o token do gateway
+    if openclaw devices approve --latest --token "$OPENCLAW_GATEWAY_TOKEN" 2>/dev/null | grep -q 'Approved pairing request'; then
+      echo ">>> Pairing aprovado automaticamente com sucesso! ✅"
+      break
+    fi
+    sleep 5
+  done
+) &
 
 # Mantém o processo do gateway em foreground
 wait $GATEWAY_PID

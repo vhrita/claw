@@ -22,10 +22,25 @@ openclaw config set gateway.mode local 2>&1 || true
 
 echo "Iniciando Gateway na porta ${OPENCLAW_PORT:-18789}..."
 
-# Inicia o gateway em foreground
-exec openclaw gateway run \
+# Inicia o gateway em background, pega a URL e depois traz pra foreground
+openclaw gateway run \
   --port "${OPENCLAW_PORT:-18789}" \
   --bind lan \
   --token "$OPENCLAW_GATEWAY_TOKEN" \
   --allow-unconfigured \
-  --verbose
+  --verbose &
+
+GATEWAY_PID=$!
+
+# Espera o gateway subir e imprime a URL tokenizada
+sleep 5
+echo ""
+echo "============================================"
+echo "  DASHBOARD URL (copie e acesse no browser):"
+echo "============================================"
+openclaw dashboard --no-open 2>&1 || echo "Use: https://seu-dominio/?token=$OPENCLAW_GATEWAY_TOKEN"
+echo "============================================"
+echo ""
+
+# Mantém o processo do gateway em foreground
+wait $GATEWAY_PID

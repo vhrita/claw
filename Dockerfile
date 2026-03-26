@@ -1,4 +1,4 @@
-FROM node:20-slim
+FROM node:22-slim
 
 # Instalando o necessário para o agente trabalhar
 RUN apt-get update && apt-get install -y \
@@ -6,13 +6,7 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Instala o Claude Code e o OpenClaw globalmente
-RUN npm install -g @anthropic-ai/claude-code openclaw
-
-# Garante que o PATH inclui o bin global do npm
-ENV PATH="/usr/local/bin:$PATH"
-
-# Verifica instalação
-RUN which openclaw && openclaw --version || echo 'WARN: openclaw not found, checking npm bin...' && ls $(npm root -g)/openclaw/ && echo "NPM global bin: $(npm bin -g)"
+RUN npm install -g @anthropic-ai/claude-code openclaw@latest
 
 # Estrutura de pastas da VHXCO
 WORKDIR /vhxco

@@ -12,5 +12,11 @@ RUN npm install -g @anthropic-ai/claude-code openclaw
 WORKDIR /vhxco
 RUN mkdir -p /vhxco/projects /vhxco/data
 
-# Mantém o container rodando para você dar comandos via Exec
-CMD ["tail", "-f", "/dev/null"]
+# Porta do Gateway (Control UI)
+EXPOSE 18789
+
+# Script de inicialização
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+CMD ["/entrypoint.sh"]

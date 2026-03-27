@@ -12,6 +12,9 @@ RUN npm install -g @anthropic-ai/claude-code openclaw@latest
 WORKDIR /vhxco
 RUN mkdir -p /vhxco/projects /vhxco/data
 
+# HOME fixo em /vhxco/data — ~/.openclaw vira /vhxco/data/.openclaw
+ENV HOME=/vhxco/data
+
 # Porta do Gateway (Control UI)
 EXPOSE 18789
 
